@@ -1,0 +1,53 @@
+{
+  "info": {
+    "_postman_id": "fam-attendance-api-collection",
+    "name": "FAM Attendance API",
+    "description": "本機 Spring Boot API。請先 `./mvnw spring-boot:run`，並選用 Environment「FAM Attendance - Local」。",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/health",
+            "description": "確認 API 已啟動"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "FamAttendance",
+      "item": [
+        {
+          "name": "GET 家人總名單（分頁）",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/fam-attendance/page?page=1&pageSize=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["fam-attendance", "page"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "10" }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
