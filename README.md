@@ -73,6 +73,8 @@ curl -s "http://localhost:8080/fam-attendance/gender-options"
 
 應回傳性別選項 JSON 陣列。
 
+根路徑 `/` 沒有前端頁面（純 REST API）；瀏覽器直接開 Render 網域若看到空白，請改用下方 API 或 Swagger 路徑。部署後根路徑會 **302** 導向 Swagger UI。
+
 ## API 一覽
 
 Base URL：`http://localhost:8080`（可由 `.env` 的 `SERVER_PORT` 調整）
@@ -264,8 +266,24 @@ src/main/java/com/fam/attendance/
 
 Render 會自動注入 **`PORT`**；應用已設定 `server.port: ${PORT:${SERVER_PORT:8080}}`，**不必**在 Render 手動設 `SERVER_PORT`。
 
+**常見啟動失敗**：日誌出現 `jdbc:postgresql://${POSTGRES_HOST}:...` 表示 **尚未在 Render 設定資料庫環境變數**。請到 Web Service → **Environment** 新增下列鍵值（與 Aiven Console 一致），按 **Save Changes** 後重新部署：
+
+| Key | 範例 |
+|-----|------|
+| `POSTGRES_HOST` | `xxx.aivencloud.com` |
+| `POSTGRES_PORT` | `27618` |
+| `POSTGRES_DB` | `defaultdb` |
+| `POSTGRES_USER` | `avnadmin` |
+| `POSTGRES_PASSWORD` | （Aiven 密碼） |
+| `POSTGRES_SSL_MODE` | `require` |
+
+也可用一組 Spring 標準變數取代上面六個：`SPRING_DATASOURCE_URL`、`SPRING_DATASOURCE_USERNAME`、`SPRING_DATASOURCE_PASSWORD`。
+
 4. **Health Check Path**（可選）：例如 `/fam-attendance/gender-options` 或 `/swagger-ui/index.html`。
-5. 部署完成後，Swagger UI：`https://<your-service>.onrender.com/swagger-ui.html`（OpenAPI 會使用 Render 提供的 `RENDER_EXTERNAL_URL`）。
+5. 部署完成後：
+   - 首頁（會導向文件）：`https://<your-service>.onrender.com/`
+   - Swagger UI：`https://<your-service>.onrender.com/swagger-ui/index.html`
+   - API 範例：`https://<your-service>.onrender.com/fam-attendance/gender-options`
 
 本機試跑映像：
 
