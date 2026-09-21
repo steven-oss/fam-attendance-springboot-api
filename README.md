@@ -185,7 +185,7 @@ curl -s -o /dev/null -w "%{http_code}\n" -X DELETE http://localhost:8080/fam-att
 2. 貼上：`http://localhost:8080/v3/api-docs`
 3. 匯入後可一併產生請求
 
-瀏覽器也可開 Swagger UI：`http://localhost:8080/swagger-ui.html`
+瀏覽器也可開 Swagger UI：`http://localhost:8080/swagger-ui/index.html`
 
 ### 手動建立單一請求
 
@@ -280,10 +280,19 @@ Render 會自動注入 **`PORT`**；應用已設定 `server.port: ${PORT:${SERVE
 也可用一組 Spring 標準變數取代上面六個：`SPRING_DATASOURCE_URL`、`SPRING_DATASOURCE_USERNAME`、`SPRING_DATASOURCE_PASSWORD`。
 
 4. **Health Check Path**（可選）：例如 `/fam-attendance/gender-options` 或 `/swagger-ui/index.html`。
-5. 部署完成後：
-   - 首頁（會導向文件）：`https://<your-service>.onrender.com/`
-   - Swagger UI：`https://<your-service>.onrender.com/swagger-ui/index.html`
-   - API 範例：`https://<your-service>.onrender.com/fam-attendance/gender-options`
+5. 部署完成後（本專案 Render 範例）：
+
+| 用途 | URL |
+|------|-----|
+| 首頁（302 → Swagger） | https://fam-attendance-springboot-api.onrender.com/ |
+| Swagger UI | https://fam-attendance-springboot-api.onrender.com/swagger-ui/index.html |
+| OpenAPI JSON | https://fam-attendance-springboot-api.onrender.com/v3/api-docs |
+| 根路徑 API（`RootController`） | 同上 Swagger，展開 **root-controller**；或直接 `GET /` |
+| 性別選項 API | https://fam-attendance-springboot-api.onrender.com/fam-attendance/gender-options |
+
+Swagger 網址後面的 `#/root-controller` 只是前端錨點（捲到該 API 分組），可寫可不寫；一般分享 **`/swagger-ui/index.html`** 即可。
+
+若自建其他 Render 服務，將網域換成 `https://<your-service>.onrender.com` 即可。
 
 本機試跑映像：
 
