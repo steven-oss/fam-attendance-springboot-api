@@ -12,14 +12,24 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI famAttendanceOpenApi(
+            @Value("${RENDER_EXTERNAL_URL:}") String renderExternalUrl,
             @Value("${server.port:8080}") int serverPort) {
-        return new OpenAPI()
+        OpenAPI openApi = new OpenAPI()
                 .info(new Info()
                         .title("FAM Attendance API")
                         .description("考勤後端 API（Postman 可匯入 /v3/api-docs）")
-                        .version("v0"))
-                .addServersItem(new Server()
-                        .url("http://localhost:" + serverPort)
-                        .description("Local"));
+                        .version("v0"));
+
+        if (renderExternalUrl != null && !renderExternalUrl.isBlank()) {
+            openApi.addServersItem(new Server()
+                    .url(renderExternalUrl)
+                    .description("Render"));
+        } else {
+            openApi.addServersItem(new Server()
+                    .url("http://localhost:" + serverPort)
+                    .description("Local"));
+        }
+
+        return openApi;
     }
 }

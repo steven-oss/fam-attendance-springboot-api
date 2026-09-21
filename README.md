@@ -244,6 +244,42 @@ src/main/java/com/fam/attendance/
 - Lombok（Entity）
 - SpringDoc OpenAPI（Swagger UI、`/v3/api-docs`）
 
+## 部署到 Render
+
+使用專案根目錄的 **Dockerfile**（多階段建置，Java 17）。
+
+1. Render Dashboard → **New → Web Service**，連到 Git repo。
+2. **Runtime**：Docker。
+3. **Environment variables**（與 Aiven 相同，勿 commit 密碼）：
+
+| 變數 | 說明 |
+|------|------|
+| `POSTGRES_HOST` | Aiven Host |
+| `POSTGRES_PORT` | Aiven Port |
+| `POSTGRES_DB` | 資料庫名稱 |
+| `POSTGRES_USER` | 使用者 |
+| `POSTGRES_PASSWORD` | 密碼 |
+| `POSTGRES_SSL_MODE` | `require` |
+| `SPRING_PROFILES_ACTIVE` | 建議 `prod`（`ddl-auto: validate`） |
+
+Render 會自動注入 **`PORT`**；應用已設定 `server.port: ${PORT:${SERVER_PORT:8080}}`，**不必**在 Render 手動設 `SERVER_PORT`。
+
+4. **Health Check Path**（可選）：例如 `/fam-attendance/gender-options` 或 `/swagger-ui/index.html`。
+5. 部署完成後，Swagger UI：`https://<your-service>.onrender.com/swagger-ui.html`（OpenAPI 會使用 Render 提供的 `RENDER_EXTERNAL_URL`）。
+
+本機試跑映像：
+
+```bash
+docker build -t fam-attendance-api .
+docker run --rm -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e POSTGRES_HOST=... -e POSTGRES_PORT=... -e POSTGRES_DB=... \
+  -e POSTGRES_USER=... -e POSTGRES_PASSWORD=... \
+  fam-attendance-api
+```
+
+容器內若未設 `PORT`，預設仍監聽 **8080**；`-p 8080:8080` 即可。
+
 ## 安全提醒
 
 若密碼曾出現在截圖或聊天中，建議到 Aiven Console **重設 database password**，並只放在本機 `.env`。
