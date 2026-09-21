@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.fam.attendance.exception.NotFoundException;
+import com.fam.attendance.dto.UpdateFamilyMemberRequest;
 
 @Service
 public class FamilyMemberService {
@@ -51,5 +53,32 @@ public class FamilyMemberService {
         );
         FamilyMember savedEntity = familyMemberRepository.save(entity);
         return FamilyMemberDto.from(savedEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public FamilyMemberDto findById(Long id) {
+        FamilyMember entity = getById(id);
+        return FamilyMemberDto.from(entity);
+    }
+
+    @Transactional
+    public FamilyMemberDto update(Long id, UpdateFamilyMemberRequest request) {
+        FamilyMember entity = getById(id);
+        entity.setName(request.name());
+        entity.setGender(request.gender());
+        entity.setPhone(request.phone());
+        entity.setAddress(request.address());
+        FamilyMember savedEntity = familyMemberRepository.save(entity);
+        return FamilyMemberDto.from(savedEntity);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        familyMemberRepository.delete(getById(id));
+    }
+    
+    private FamilyMember getById(Long id) {
+        return familyMemberRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Family member not found"));
     }
 }

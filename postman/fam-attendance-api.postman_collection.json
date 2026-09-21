@@ -2,13 +2,17 @@
   "info": {
     "_postman_id": "fam-attendance-api-collection",
     "name": "FAM Attendance API",
-    "description": "本機 Spring Boot API。請先 `./mvnw spring-boot:run`，並選用 Environment「FAM Attendance - Local」。",
+    "description": "家人 CRUD API。請先 `./mvnw spring-boot:run`，並選用 Environment「FAM Attendance - Local」。建議順序：POST → GET by id → PUT → GET page → DELETE。",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
       "value": "http://localhost:8080"
+    },
+    {
+      "key": "memberId",
+      "value": "1"
     }
   ],
   "item": [
@@ -44,6 +48,91 @@
                 { "key": "pageSize", "value": "10" }
               ]
             }
+          },
+          "response": []
+        },
+        {
+          "name": "GET 性別選項（下拉）",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/fam-attendance/gender-options",
+            "description": "回傳 [{ code, label }, ...]"
+          },
+          "response": []
+        },
+        {
+          "name": "POST 新增家人",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  var json = pm.response.json();",
+                  "  if (json.id) {",
+                  "    pm.collectionVariables.set('memberId', String(json.id));",
+                  "    pm.environment.set('memberId', String(json.id));",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"王小明\",\n  \"gender\": \"男\",\n  \"phone\": \"0912345678\",\n  \"address\": \"台北市\"\n}"
+            },
+            "url": "{{baseUrl}}/fam-attendance",
+            "description": "成功 201，並將回傳 id 寫入 collection/environment 變數 memberId"
+          },
+          "response": []
+        },
+        {
+          "name": "GET 家人 by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/fam-attendance/{{memberId}}",
+            "description": "使用變數 memberId（POST 後會自動更新）"
+          },
+          "response": []
+        },
+        {
+          "name": "PUT 更新家人",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"王小明（已更新）\",\n  \"gender\": \"男\",\n  \"phone\": \"0987654321\",\n  \"address\": \"新北市\"\n}"
+            },
+            "url": "{{baseUrl}}/fam-attendance/{{memberId}}",
+            "description": "整筆更新（PUT），需送齊 name / gender / phone / address"
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE 刪除家人",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/fam-attendance/{{memberId}}",
+            "description": "成功 204 無 body；不存在 id 為 404"
           },
           "response": []
         }
