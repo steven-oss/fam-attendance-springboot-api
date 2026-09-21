@@ -65,10 +65,13 @@ source scripts/java-env.sh
 
 ### 3. 驗證
 
+應用啟動後，在瀏覽器開啟 Swagger UI，或請求家人 API：
+
 ```bash
-curl http://localhost:8080/health
-# {"status":"UP"}
+curl -s "http://localhost:8080/fam-attendance/gender-options"
 ```
+
+應回傳性別選項 JSON 陣列。
 
 ## API 一覽
 
@@ -76,7 +79,6 @@ Base URL：`http://localhost:8080`（可由 `.env` 的 `SERVER_PORT` 調整）
 
 | 方法 | 路徑 | 成功狀態 | 說明 |
 |------|------|----------|------|
-| GET | `/health` | 200 | 服務健康檢查 |
 | GET | `/fam-attendance/page?page=1&pageSize=10` | 200 | 家人分頁列表 |
 | GET | `/fam-attendance/gender-options` | 200 | 性別下拉選項（code / label） |
 | POST | `/fam-attendance` | **201** | 新增家人 |
@@ -161,8 +163,8 @@ curl -s -o /dev/null -w "%{http_code}\n" -X DELETE http://localhost:8080/fam-att
 1. Postman → **Import** → 選 `postman/fam-attendance-api.postman_collection.json`
 2. 再 Import → `postman/fam-attendance-local.postman_environment.json`
 3. 右上角 Environment 選 **FAM Attendance - Local**
-4. 執行 **Health → GET Health**，應得到 `{"status":"UP"}`
-5. **FamAttendance** 資料夾建議順序：
+4. **FamAttendance** 資料夾建議順序：
+   - **GET 性別選項（下拉）**
    - **POST 新增家人** → 201；Collection 的 Tests 會把回應 `id` 寫入 `{{memberId}}`
    - **GET 家人 by id** → 200
    - **PUT 更新家人** → 200
@@ -188,7 +190,7 @@ curl -s -o /dev/null -w "%{http_code}\n" -X DELETE http://localhost:8080/fam-att
 | 欄位 | 值 |
 |------|-----|
 | Method | `GET` |
-| URL | `http://localhost:8080/health` |
+| URL | `http://localhost:8080/fam-attendance/gender-options` |
 | Headers | 無（目前 API 不需 Token） |
 
 若 `curl` / Postman 連不上，代表後端還沒起來或 port 不對，請看 `spring-boot:run` 終端機的錯誤訊息。
@@ -211,7 +213,7 @@ curl -s -o /dev/null -w "%{http_code}\n" -X DELETE http://localhost:8080/fam-att
 src/main/java/com/fam/attendance/
 ├── FamAttendanceApplication.java
 ├── config/          # Spring 設定（OpenAPI 等）
-├── controller/      # HTTP 入口（FamAttendanceController、HealthController）
+├── controller/      # HTTP 入口（FamAttendanceController）
 ├── service/         # 業務邏輯（FamilyMemberService）
 ├── repository/      # Spring Data JPA（FamilyMemberRepository）
 ├── entity/          # JPA 實體（FamilyMember，Lombok）
